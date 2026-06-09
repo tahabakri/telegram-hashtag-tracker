@@ -48,11 +48,11 @@ Entries start saving to `entries.csv`.
 
 ## Customising
 
-Open `bot.py` and edit the **CONFIG** block near the top:
-- `TRACKED_HASHTAGS` — the hashtags to watch (keep them lowercase)
-- `REPLIES` — the pool of replies for each hashtag (add as many as you like)
+Set your campaign in the environment (in `.env`) — no code changes needed:
+- `TRACKED_HASHTAGS` — comma-separated hashtags to watch, e.g. `#entry,#proof,#prediction` (case-insensitive)
+- `REPLIES_JSON` — optional one-line JSON mapping each hashtag to a list of replies; leave it blank for the built-in defaults
 
-That's the only part you need to touch for a new campaign.
+Both fall back to sensible defaults, so the bot runs out of the box. The defaults live in the **CONFIG** block of `bot.py` if you'd rather edit them there.
 
 ## Optional: Google Sheets
 

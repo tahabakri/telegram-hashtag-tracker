@@ -23,6 +23,7 @@ See README.md for Google Sheets and 24/7 hosting notes.
 
 import os
 import csv
+import json
 import random
 import logging
 from datetime import datetime, timezone
@@ -52,12 +53,19 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 # prefix it with -100.  Example:  .../c/2515871/45  ->  -1002515871
 GROUP_CHAT_ID = int(os.environ.get("GROUP_CHAT_ID", "0"))
 
-# Hashtags to track (lowercase). EDIT THESE for your campaign.
-TRACKED_HASHTAGS = ["#entry", "#proof", "#prediction"]
+# Hashtags to track — set TRACKED_HASHTAGS in the environment as a
+# comma-separated list (e.g. "#entry,#proof,#prediction"). Falls back to a
+# generic set so the bot runs out of the box. Matching is case-insensitive.
+TRACKED_HASHTAGS = [
+    h.strip().lower()
+    for h in os.environ.get("TRACKED_HASHTAGS", "#entry,#proof,#prediction").split(",")
+    if h.strip()
+]
 
-# Fun replies per hashtag — the bot picks one at random so it doesn't feel
-# robotic. EDIT THESE freely; each hashtag can have any number of replies.
-REPLIES = {
+# Replies per hashtag — set REPLIES_JSON in the environment to a JSON object
+# mapping each hashtag to a list of replies. Leave it unset to use these
+# generic defaults. The bot picks one reply at random so it doesn't feel robotic.
+_DEFAULT_REPLIES = {
     "#entry": [
         "You're in! 🎉 logged ✅",
         "Entry counted 🙌 keep 'em coming!",
@@ -72,6 +80,15 @@ REPLIES = {
         "Bold call 👀 logged — good luck!",
     ],
 }
+_replies_raw = os.environ.get("REPLIES_JSON", "").strip()
+if _replies_raw:
+    try:
+        REPLIES = json.loads(_replies_raw)
+    except json.JSONDecodeError:
+        print("WARNING: REPLIES_JSON is not valid JSON — using default replies.")
+        REPLIES = _DEFAULT_REPLIES
+else:
+    REPLIES = _DEFAULT_REPLIES
 
 # Local backup file — always written, even when Google Sheets is enabled.
 CSV_FILE = os.environ.get("CSV_FILE", "entries.csv")
