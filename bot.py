@@ -164,7 +164,14 @@ def connect_sheets():
         return None
     try:
         import gspread  # imported lazily so CSV-only users don't need it
-        gc = gspread.service_account(filename=GOOGLE_CREDS_FILE)
+        # On cloud hosts there is no creds.json file — read the whole
+        # service-account JSON from an env var instead; fall back to the
+        # local file for local development.
+        creds_json = os.environ.get("GOOGLE_CREDS_JSON", "").strip()
+        if creds_json:
+            gc = gspread.service_account_from_dict(json.loads(creds_json))
+        else:
+            gc = gspread.service_account(filename=GOOGLE_CREDS_FILE)
         ws = gc.open(GSHEET_NAME).sheet1
         if not ws.get_all_values():
             ws.append_row(CSV_HEADERS)
