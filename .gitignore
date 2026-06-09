@@ -1,0 +1,21 @@
+# Secrets & credentials — NEVER commit these
+.env
+creds.json
+*.json.key
+
+# Logged data (local)
+entries.csv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Editor / tooling
+.idea/
+.vscode/
+.claude/
+.DS_Store
