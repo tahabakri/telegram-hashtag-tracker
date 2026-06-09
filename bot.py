@@ -114,6 +114,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Silence the HTTP client's request logging so the bot token (which Telegram
+# puts inside every request URL) is never written to the logs.
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
+
 # Set in main(): the Google Sheet worksheet handle (or None for CSV-only).
 gsheet = None
 
